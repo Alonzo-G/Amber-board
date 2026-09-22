@@ -1,6 +1,6 @@
 # Amber Board
 
-单文件、零外部依赖的无限画布白板（个人版）。深色顶栏 + 白色画布 + 浅灰网格，直接用浏览器打开 `my-board.html` 即可使用。
+单文件、零外部依赖的无限画布白板（个人版）。深色顶栏 + 白色画布 + 浅灰网格，直接用浏览器打开 `index.html` 即可使用。
 
 ## 功能
 
@@ -29,4 +29,37 @@
 
 ## 说明
 
-整站在单个 `my-board.html` 内：HTML/CSS/JS 全内联，无构建步骤、无网络请求。网格、笔迹、连线、便签、选中手柄统一绘制在同一块 Canvas 上（编辑文字时才用覆盖层 textarea），数据在浏览器本地，不上传服务器。
+整站在单个 `index.html` 内：HTML/CSS/JS 全内联，无构建步骤、无网络请求。网格、笔迹、连线、便签、选中手柄统一绘制在同一块 Canvas 上（编辑文字时才用覆盖层 textarea），数据在浏览器本地，不上传服务器。
+
+## 部署到 Cloudflare Pages
+
+仓库根目录即为产物目录，**无需构建**。
+
+1. Cloudflare 控制台 → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
+2. 选中本仓库，构建设置：
+
+   | 配置项 | 值 |
+   |---|---|
+   | Framework preset | `None` |
+   | Build command | 留空 |
+   | Build output directory | `/` |
+
+3. 保存并部署，得到 `https://<项目名>.pages.dev`
+
+仓库内的 `_headers` / `_redirects` 会被 Pages 自动识别：
+
+- `_headers` — 严格 CSP（`connect-src 'none'`，禁止一切外连）、`nosniff`、禁止 iframe 嵌套、`no-cache` 保证更新即时生效
+- `_redirects` — 旧文件名 `/my-board.html` 永久重定向到根地址
+
+### 数据说明
+
+白板内容存在浏览器 `localStorage`，**按域名隔离**：换域名、换浏览器、换设备都看不到原来的画板，首次访问会给出提示。跨环境迁移请用顶栏的 **导出 JSON → 导入 JSON**。
+
+### 本地预览
+
+```bash
+python -m http.server 8000
+# 打开 http://127.0.0.1:8000
+```
+
+直接双击 `index.html` 也可以，但此时 `_headers` 里的安全头不生效。

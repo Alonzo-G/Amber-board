@@ -2,8 +2,15 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>我的白板 · 个人笔记板</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>我的白板 · Amber Board</title>
+<meta name="description" content="单文件白板：无限画布、便签、画笔、连线、对齐吸附，零依赖可离线，数据存在本机浏览器。">
+<meta name="theme-color" content="#171a21">
+<meta name="referrer" content="no-referrer">
+<meta property="og:type" content="website">
+<meta property="og:title" content="我的白板 · Amber Board">
+<meta property="og:description" content="单文件白板：无限画布、便签、画笔、连线、对齐吸附，零依赖可离线。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23171a21'/%3E%3Crect x='8' y='7' width='12' height='12' rx='2.5' fill='%23FFE479' transform='rotate(-8 14 13)'/%3E%3Crect x='13' y='14' width='12' height='12' rx='2.5' fill='%23AED8FF' transform='rotate(7 19 20)'/%3E%3C/svg%3E">
 <style>
   :root{
     --topbar:#171a21;
@@ -1693,11 +1700,11 @@ docTitle.addEventListener('keydown', e => {
 });
 
 let toastTimer = 0;
-function toast(msg){
+function toast(msg, ms){
   toastEl.textContent = msg;
   toastEl.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1800);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms || 1800);
 }
 
 /* ========================= 键盘 ========================= */
@@ -1781,6 +1788,17 @@ function init(){
   setSaveState(restored ? '已从本地恢复' : '已保存到本地');
   board.style.cursor = toolCursor(S.tool);
   invalidate();
+
+  // 首次访问：说明数据按域名隔离，提示可用 JSON 备份迁移
+  try {
+    if (!localStorage.getItem('my-board-tip')){
+      localStorage.setItem('my-board-tip', '1');
+      setTimeout(() => toast(
+        '画板内容保存在本机浏览器（按域名隔离）· 换域名或换设备请用菜单栏导出 / 导入 JSON',
+        7000
+      ), 1500);
+    }
+  } catch(e){}
 
   // 提示条自动淡出
   const hint = document.getElementById('hint');
